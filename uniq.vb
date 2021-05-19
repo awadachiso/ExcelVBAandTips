@@ -1,22 +1,31 @@
+Option Explicit
+
 Function uniq(rngA, rngB)
   Dim result
   Set result = CreateObject("Scripting.Dictionary")
+    
+  Dim integratedRange, length, cll
+  Set integratedRange = Union(rngA, rngB)
+  length = integratedRange.Count
   
-  result.Add rngA(1).Value, rngA(1)
+  'add first cell
+  result.Add integratedRange(1).Value, integratedRange(1).Value
   
-  Dim a, b
-  For Each a In rngA
-    If Not result.exists(a.Value) Then
-      result.Add a.Value, a
-      Debug.Print a.Value, a.Address
+  'if not exist, add to result
+  'Key and Item are cell.value
+  For Each cll In integratedRange
+    If Not result.exists(cll.Value) Then
+      result.Add cll.Value, cll.Value
     End If
   Next
   
-  For Each b In rngB
-   If Not result.exists(b.Value) Then
-     result.Add b.Value, b
-     Debug.Print b.Value, b.Address
-   End If
+  'length is sizeof integratedRange
+  'In order to be used as an array expression, it must be at least as large as integratedRange.
+  'Therefore, the keys of the remaining elements will be the current size,
+  'and the values will be padded with "".
+  Dim i
+  For i = result.Count To length
+    result.Add result.Count, ""
   Next
   
   uniq = WorksheetFunction.Transpose(result.items)
