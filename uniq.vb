@@ -1,33 +1,48 @@
 Option Explicit
 
 Function uniq(rngA, rngB)
-  Dim result
-  Set result = CreateObject("Scripting.Dictionary")
+  Dim uniqs
+  Set uniqs = CreateObject("Scripting.Dictionary")
     
-  Dim integratedRange, length, cll
-  Set integratedRange = Union(rngA, rngB)
-  length = integratedRange.Count
+  Dim maxLength, cll
+  maxLength = rngA.Count + rngB.Count
   
   'add first cell
-  result.Add integratedRange(1).Value, integratedRange(1).Value
+  uniqs.Add rngA(1).Value, rngA(1).Value
   
-  'if not exist, add to result
+  'if not exist, add to uniqs
   'Key and Item are cell.value
-  For Each cll In integratedRange
-    If Not result.exists(cll.Value) Then
-      result.Add cll.Value, cll.Value
+  For Each cll In rngA
+    If cll.Value <> "" Then
+      If Not uniqs.exists(cll.Value) Then
+        uniqs.Add cll.Value, ""
+      End If
     End If
   Next
   
-  'length is sizeof integratedRange
-  'In order to be used as an array expression, it must be at least as large as integratedRange.
-  'Therefore, the keys of the remaining elements will be the current size,
-  'and the values will be padded with "".
-  Dim i
-  For i = result.Count To length
-    result.Add result.Count, ""
+  For Each cll In rngB
+    If cll.Value <> "" Then
+      If Not uniqs.exists(cll.Value) Then
+        uniqs.Add cll.Value, ""
+      End If
+    End If
   Next
   
-  uniq = WorksheetFunction.Transpose(result.items)
-  result = Null
+  'maxLength is sizeof rngA + rngB
+  'In order to be used as an array expression, size of retuern value must be at least maxLength.
+  'Therefore, the remaining elements will be padded with "".
+  
+  'extract Keys
+  Dim result
+  result = uniqs.Keys
+  'resize
+  ReDim Preserve result(maxLength)
+  
+  Dim i
+  For i = uniqs.Count To maxLength
+    result(i) = ""
+  Next
+  
+  uniq = WorksheetFunction.Transpose(result)
+  uniqs = Null
 End Function
