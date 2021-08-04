@@ -1,12 +1,31 @@
 Option Explicit
 
-Function sumOneTwo(rng As Range)
+'switch src Sheets By blockName
+Function sumBlock(rngStr As String, blockName As String)
   Dim shts
-  shts = Array(ThisWorkbook.Sheets("Sheet1"), ThisWorkbook.Sheets("Sheet2"))
-  sumOneTwo = sumMultiSheet(shts, rng)
+  Dim sheetNames
+  Set sheetNames = CreateObject("Scripting.Dictionary")
+  sheetNames.Add "BlockA", Array(ThisWorkbook.Sheets("Sheet1"), ThisWorkbook.Sheets("Sheet2"))
+  sheetNames.Add "BlockB", Array(ThisWorkbook.Sheets("Sheet3"), ThisWorkbook.Sheets("Sheet4"))
+  
+  shts = sheetNames(blockName)
+  sumBlock = sumBetweenSheets(shts, Range(rngStr))
 End Function
 
-Function SumValueBetweenSheets(shts, rng As Range)
+
+'switch src Sheets By blockName
+Function averageBlock(rngStr As String, blockName As String)
+  Dim shts
+  Dim sheetNames
+  Set sheetNames = CreateObject("Scripting.Dictionary")
+  sheetNames.Add "BlockA", Array(ThisWorkbook.Sheets("Sheet1"), ThisWorkbook.Sheets("Sheet2"))
+  sheetNames.Add "BlockB", Array(ThisWorkbook.Sheets("Sheet3"), ThisWorkbook.Sheets("Sheet4"))
+  
+  shts = sheetNames(blockName)
+  averageBlock = averageBetweenSheets(shts, Range(rngStr))
+End Function
+
+Function sumBetweenSheets(shts, rng As Range)
   Dim results() As Variant
   Dim height: height = rng.Rows.Count
   Dim width: width = rng.Columns.Count
@@ -16,7 +35,7 @@ Function SumValueBetweenSheets(shts, rng As Range)
   
   'Find the total value of all sheets in each cell
   Dim x, y  'counter
-  dim s     'sheet iterator
+  Dim s     'sheet iterator
   Dim cellIndex
   
   'Tally while proceeding in the direction of the column
@@ -30,36 +49,43 @@ Function SumValueBetweenSheets(shts, rng As Range)
       For Each s In shts
         results(y, x) = results(y, x) + s.Range(rng(cellIndex).Address)
       Next
-      
-      ' case of average
-      ' For Each s In Sheets
-        ' results(y, x) = results(y, x) + s.Range(rng(cellIndex).Address)
-      ' Next
-      ' results(y, x) = results(y, x) / Sheets.Count
-      
     Next
   Next
   
   'return Array
-  sumMultiSheet = results
+  sumBetweenSheets = results
 End Function
 
-Function createSheetsArray(ParamArray sheetNames() As Variant)
-  Dim collect
-  Set collect = New Collection
 
-  Dim results
-  Dim maxIndex
-  maxIndex = UBound(sheetNames)
-  ReDim results(maxIndex)
-    
-  Dim i
-  For i = 0 To maxIndex
-    collect.Add ThisWorkbook.Sheets(sheetNames(i)), sheetNames(i)
+Function averageBetweenSheets(shts, rng As Range)
+  Dim results() As Variant
+  Dim height: height = rng.Rows.Count
+  Dim width: width = rng.Columns.Count
+  
+  'Make the size of the results() the same as that of the argument
+  ReDim results(height - 1, width - 1)
+  
+  'Find the total value of all sheets in each cell
+  Dim x, y  'counter
+  Dim s     'sheet iterator
+  Dim cellIndex
+  
+  'Tally while proceeding in the direction of the column
+  For y = 0 To height - 1 'Vertical (row direction)
+    For x = 0 To width - 1 'Horizontal (column direction)
+      'rowNum*width +colNum+1
+      cellIndex = y * width + x + 1
+      'initialize
+      results(y, x) = 0
+      
+       For Each s In shts
+         results(y, x) = results(y, x) + s.Range(rng(cellIndex).Address)
+       Next
+       results(y, x) = results(y, x) / Sheets.Count
+    Next
   Next
   
-  For Each c In collect
-    
-  
-  createSheetsArray = collect
+  'return Array
+  averageBetweenSheets = results
 End Function
+
