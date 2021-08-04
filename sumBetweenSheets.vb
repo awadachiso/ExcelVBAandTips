@@ -1,6 +1,7 @@
 Option Explicit
 
 'switch src Sheets By blockName
+'e.g.) =sumBlock("A1:A10", "BlockA") using Spill or ArrayFromula(CSE) 
 Function sumBlock(rngStr As String, blockName As String)
   Dim shts
   Dim sheetNames
@@ -13,7 +14,6 @@ Function sumBlock(rngStr As String, blockName As String)
 End Function
 
 
-'switch src Sheets By blockName
 Function averageBlock(rngStr As String, blockName As String)
   Dim shts
   Dim sheetNames
