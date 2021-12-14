@@ -1,16 +1,3 @@
-Option Explicit
-
-Sub main()
-  Dim i, j As Integer
-  For i = 1 To Selection.Count - 1
-    j = Selection.Count - i + 1
-    Debug.Print Selection(j).Address
-    If Selection(j).Value <> Selection(j - 1).Value Then
-      Selection(j).EntireRow.Insert
-    End If
-  Next
-End Sub
-
 
 Function isSameValueWithUpperCell(cll)
   Dim result As Boolean
@@ -32,41 +19,48 @@ Sub insertUpperRow(cll)
   cll.Offset(-1).Value = cll.Value
 End Sub
 
-Sub rollup(col)
+Sub rollup(Col)
   Dim length
-  length = col.Rows.Count
-  Dim i
-  i = length
+  length = Col.Rows.Count
+  Dim rowNum
+  rowNum = length
+  Dim currentCell
   
-  While i > 0
-    If Not isSameValueWithUpperCell(col(i)) Then
-      If i = 1 Then
- '       insertUpperRow col(i)
-      ElseIf col(i).Offset(-1).Value <> "" Then
-        insertUpperRow col(i)
-      End If
+  
+  While rowNum > 0
+    Set currentCell = Col(rowNum)
+    If currentCell.Value = "" Then
+      'Do Nothing
+    ElseIf rowNum <> 1 And isSameValueWithUpperCell(currentCell) Then
+      'Do Nothing
+      'currentCell.ClearContents
     Else
-      col(i).ClearContents
+      insertUpperRow currentCell
+      'currentCell.ClearContents
     End If
-    i = i - 1
+    rowNum = rowNum - 1
   Wend
 End Sub
 
 Sub foldleft(rng)
   Dim width
   width = rng.Columns.Count
-  Dim col
-  For Each col In rng.Columns
-    If isLastColumn(col, rng) Then
+  Dim Col
+  For Each Col In rng.Columns
+    If isLastColumn(Col, rng) Then
       'do nothing
     Else
-      Call rollup(col)
+      Call rollup(Col)
     End If
   Next
 End Sub
 
-Function isLastColumn(col, rng)
+Function isLastColumn(Col, rng)
   Dim result
-  result = col.Column = rng.Columns(rng.Columns.Count).Column
+  result = Col.Column = rng.Columns(rng.Columns.Count).Column
   isLastColumn = result
 End Function
+
+Sub m2(Col)
+  rollup Range(Col & "1:" & Col & "100 ")
+End Sub
