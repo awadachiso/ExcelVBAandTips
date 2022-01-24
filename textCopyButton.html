@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+	<body>
+		<div id="placeholder"></div>
+	</body>
+
+  <script>
+		//---------------------------
+		//ここで適当なidとコピーしたいメッセージを登録する
+		//---------------------------
+		
+		createCopyButton("btnA","buttonA");
+		createCopyButton("btnB","buttonB");
+		createCopyButton("btnC","buttonC");
+		
+		
+		
+		//------------実質的な処理--------------
+		//コピーする要素を追加するプログラム
+		function createCopyButton(id, text){
+			//ボタン要素
+			const newButton = document.createElement("button");
+			newButton.id = id;
+			newButton.innerText = text;
+			
+			//コピーする文字列を表示する要素
+			const textLine = document.createElement("textLine");
+			textLine.innerText = "\t" + text;
+
+			//ボタンをクリックしたときのイベント設定
+			newButton.addEventListener("click",()=>{
+				//const htab = String.fromCodePoint(9);
+				//const vtab = String.fromCodePoint(11);
+				navigator.clipboard.writeText(text);
+				//〆記号を追加
+				textLine.innerText = "〆" + text;
+				
+				},false);
+			
+			//ボタンとコピー文字列と改行要素を#placeholderに追加
+			document.querySelector("#placeholder").appendChild(newButton);
+			document.querySelector("#placeholder").appendChild(textLine);
+			document.querySelector("#placeholder").appendChild(document.createElement("br"));
+		}
+  </script>
+
+</html>
