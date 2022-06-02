@@ -4,7 +4,7 @@ Function getFileNamesFromDialog()
   Dim myFiles As Variant
   Dim f As Variant
   
-  ChDir "C:\Users\Kan\OneDrive" 'select default dir
+  ChDir "C:\Users" 'select default dir
 
   myFiles = Application.GetOpenFilename( _
     FileFilter:="Excel (*.xlsx;*.xls;*.xls),*.xlsx;*.xls;*.xls, CSV (*.csv),*.csv", _
